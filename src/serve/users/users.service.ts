@@ -29,16 +29,15 @@ export class UsersService {
 		return this.usersModel.create(createuserDto);
 	}
 	/**
+     * 删除账号
+     */
+	async delUser(createuserDto: CreateUserDto): Promise<Users> {
+		return this.usersModel.findByIdAndRemove(createuserDto._id)
+	}
+	/**
      * 登录 
      */
 	async login(createuserDto: CreateUserDto): Promise<Users> {
-		const createdUser = new this.usersModel(createuserDto);
-		return createdUser.save();
-	}
-	/**
-     * 删除账号
-     */
-	async delUser(): Promise<Users[]> {
-		return this.usersModel.find().exec();
+		return this.usersModel.findOne({userName: createuserDto.userName});
 	}
 }

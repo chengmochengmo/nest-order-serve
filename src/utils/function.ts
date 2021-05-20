@@ -1,7 +1,7 @@
-import {ResponseData} from './response'
+import {ResponseData, ResponseStatus} from './response'
 
 // 返回客户端格式
-const s =  (data: any, msg = '', errorCode = 0): Object => {
+const s =  (data: any, msg = '', errorCode = ResponseStatus.SUCCESS): Object => {
     const responseData: ResponseData = {
         errorCode,
         msg,
