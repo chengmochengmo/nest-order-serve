@@ -1,10 +1,14 @@
 import { Module, Global, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+// 用户
+import { UsersModule } from './serve/users/users.module';
+// 分类
+import { CatesModule } from './serve/cates/cates.module';
+
 
 // mongo数据库
 import { MongooseModule } from '@nestjs/mongoose';
-import { UsersModule } from './serve/users/users.module';
 
 // redis数据库
 import { RedisModule} from 'nestjs-redis'
@@ -25,7 +29,8 @@ import { AuthMiddleware } from './common/middleware/auth.middleware'
   imports: [
     MongooseModule.forRoot('mongodb://localhost/nestOrder'),
     RedisModule.register(options),
-    UsersModule
+    UsersModule,
+    CatesModule
   ],
   controllers: [AppController],
   providers: [AppService, CacheService],
@@ -37,6 +42,6 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
-      .forRoutes('*')
+      .forRoutes('/serve/*')
   }
 }

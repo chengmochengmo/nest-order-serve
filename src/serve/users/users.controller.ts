@@ -1,14 +1,15 @@
 const crypto = require('crypto');
 
-import { Controller, Get, Post, Body, Query, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { UsersService } from './users.service'
-import { CacheService } from '../../redis/cache.service'
 import { CreateUserDto } from './dto/create-user.dto';
+import { CacheService } from '../../redis/cache.service'
 
+// 工具方法
 import { s } from '../../utils/function'
 import { ResponseStatus } from '../../utils/response'
 
-@Controller('users')
+@Controller('serve/users')
 export class UsersController {
     constructor(private readonly usersService: UsersService, private readonly cache: CacheService) {}
     /**

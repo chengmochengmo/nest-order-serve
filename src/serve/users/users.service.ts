@@ -1,5 +1,5 @@
-import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
+import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Users, UsersDocument } from '../../schemas/users.schema';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -23,16 +23,14 @@ export class UsersService {
      * 添加、编辑账号
      */
 	async editUser(createuserDto: CreateUserDto): Promise<Users> {
-		if (createuserDto._id) {
-			return this.usersModel.findByIdAndUpdate(createuserDto._id, Object.assign(createuserDto));
-		}
+		if (createuserDto._id) return this.usersModel.findByIdAndUpdate(createuserDto._id, Object.assign(createuserDto));
 		return this.usersModel.create(createuserDto);
 	}
 	/**
      * 删除账号
      */
 	async delUser(createuserDto: CreateUserDto): Promise<Users> {
-		return this.usersModel.findByIdAndRemove(createuserDto._id)
+		return this.usersModel.findByIdAndRemove(createuserDto._id);
 	}
 	/**
      * 登录 
