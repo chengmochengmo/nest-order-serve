@@ -20,6 +20,7 @@ export class CatesController {
      */
     @Post('editCate')
     async editCate(@Body() createcateDto: CreateCateDto) {
+        createcateDto.createTime = new Date();
         const data = await this.catesService.editCate(createcateDto);
         return s(data);
     }
@@ -28,9 +29,9 @@ export class CatesController {
      * 分类列表
      */
     @Get('findCatesList')
-    async findCatesList() {
-        const data = await this.catesService.findCatesList();
-        return s(data);
+    async findCatesList(@Query('page') page: number, @Query('size') size: number, @Query('name') name: string) {
+        const [count, data] = await this.catesService.findCatesList(page, size, name);
+        return s({data, count});
     }
 
     /**

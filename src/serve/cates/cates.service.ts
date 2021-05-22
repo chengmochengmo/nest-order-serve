@@ -19,8 +19,23 @@ export class CatesService {
     /**
      * 分类列表
      */
-    async findCatesList(): Promise<Cates[]> {
-        return this.catesModel.find().exec();
+    async findCatesList(page, size, name): Promise<[number, Cates[]]> {
+        page = parseInt(page) - 1;
+        size = parseInt(size);
+        const query: object = name ? { name } : {};
+        return Promise.all([
+            // 条件筛选后可查询总条数
+            this.catesModel.count(query),
+            // 条件筛选后 当前分页数据
+            this.catesModel
+                .find(query)
+                // 转int类型排序
+                .collation({'locale': 'zh', numericOrdering: true})
+                .sort({'sort': -1})
+                .skip(page * size)
+                .limit(size)
+                .exec()
+        ]);
     }
 
     /**
