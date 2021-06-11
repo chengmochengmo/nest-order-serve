@@ -19,10 +19,11 @@ export class CatesService {
     /**
      * 分类列表
      */
-    async findCatesList(page, size, name): Promise<[number, Cates[]]> {
-        page = parseInt(page) - 1;
-        size = parseInt(size);
-        const query: object = name ? { name } : {};
+    async findCatesList(page: number = 1, size: number = 0, name: string): Promise<[number, Cates[]]> {
+        // 模糊匹配正则
+        const regexp: RegExp = new RegExp(name);
+        // 查询条件
+        const query: object = name ? { name: regexp } : {};
         return Promise.all([
             // 条件筛选后可查询总条数
             this.catesModel.count(query),
@@ -32,8 +33,8 @@ export class CatesService {
                 // 转int类型排序
                 .collation({'locale': 'zh', numericOrdering: true})
                 .sort({'sort': -1})
-                .skip(page * size)
-                .limit(size)
+                .skip((page -1) * size)
+                .limit(size === 0 ? 999 : size)
                 .exec()
         ]);
     }

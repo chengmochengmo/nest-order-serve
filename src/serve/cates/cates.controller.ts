@@ -10,6 +10,7 @@ import { CreateCateDto } from './dto/create-cate.dto';
 import { s } from '../../utils/function'
 // 配置常量
 import { constant } from '../../config/constant'
+import { ResponseStatus } from '../../utils/response';
 
 @Controller('serve/cates')
 export class CatesController {
@@ -29,7 +30,9 @@ export class CatesController {
      * 分类列表
      */
     @Get('findCatesList')
-    async findCatesList(@Query('page') page: number, @Query('size') size: number, @Query('name') name: string) {
+    async findCatesList(@Query('page') page, @Query('size') size, @Query('name') name: string) {
+        size = parseInt(size)
+        page = parseInt(page)
         const [count, data] = await this.catesService.findCatesList(page, size, name);
         return s({data, count});
     }
@@ -57,13 +60,22 @@ export class CatesController {
      */
     @Post('upload')
     @UseInterceptors(FileInterceptor('file'))
-    async upload(@UploadedFile() file) {
-        // 服务端文件名字
+    async upload(@UploadedFile() file, @Body('folder') folder) {
+        if(!folder) return s(null, '请标明文件储存路径', ResponseStatus.ERROR)
+        // 文件储存公共路径
+        const publicPath = path.join(__dirname, `../../../${constant.PUBLIC_PATH}/${folder}`);
+        // 检查路径是否存在 不存在则创建
+        try {
+            fs.accessSync(publicPath);
+        } catch (error) {
+            fs.mkdirSync(publicPath);
+        }
+        // 服务端储存的文件名字
         const fileName: string = new Date().valueOf().toString() + file.originalname;
         // 写入硬盘
-        const writerStream = fs.writeFileSync(path.join(__dirname, `../../../${constant.PUBLIC_PATH}`, fileName), file.buffer);
+        fs.writeFileSync(path.join(publicPath, fileName), file.buffer);
         return s({
-            filePath: `${constant.PUBLIC_PATH}/${fileName}`,
+            filePath: `${constant.PUBLIC_PATH}/${folder}/${fileName}`,
             size: file.size,
             mimetype: file.mimetype
         })

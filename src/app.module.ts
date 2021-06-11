@@ -5,6 +5,8 @@ import { AppService } from './app.service';
 import { UsersModule } from './serve/users/users.module';
 // 分类
 import { CatesModule } from './serve/cates/cates.module';
+// 菜品
+import { FoodsModule } from './serve/foods/foods.module';
 
 
 // mongo数据库
@@ -30,7 +32,8 @@ import { AuthMiddleware } from './common/middleware/auth.middleware'
     MongooseModule.forRoot('mongodb://localhost/nestOrder'),
     RedisModule.register(options),
     UsersModule,
-    CatesModule
+    CatesModule,
+    FoodsModule
   ],
   controllers: [AppController],
   providers: [AppService, CacheService],

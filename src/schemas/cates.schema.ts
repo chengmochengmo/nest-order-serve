@@ -11,12 +11,12 @@ export class Cates extends Document {
   name: string;
 
   // 描述
-  @Prop()
-  desc: String
+  @Prop({ required: true })
+  desc: string
 
   // 排序
   @Prop()
-  sort: String
+  sort: number
 
   // icon
   @Prop({ required: true })
