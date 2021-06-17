@@ -3,15 +3,12 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { FoodsService } from './foods.service'
 import { CreateFoodDto } from './dto/create-food.dto';
 
-// 工具方法
-import { s } from '../../utils/function'
-// 配置常量
-import { constant } from '../../config/constant'
-import { ResponseStatus } from '../../utils/response';
+// 基础类
+import { BaseController } from '../../base/base.controller'
 
 @Controller('serve/foods')
-export class FoodsController {
-    constructor(private readonly foodsService: FoodsService) {}
+export class FoodsController extends BaseController {
+    constructor(private readonly foodsService: FoodsService) { super() }
 
     /**
      * 删除菜品
@@ -19,7 +16,7 @@ export class FoodsController {
     @Post('delFood')
     async delFood(@Body() createfoodDto: CreateFoodDto) {
         const data = await this.foodsService.delFood(createfoodDto);
-        return s(data);
+        return this.s(data);
     }
 
     /**
@@ -30,7 +27,7 @@ export class FoodsController {
         size = parseInt(size)
         page = parseInt(page)
         const [count, data] = await this.foodsService.findFoodsList(page, size, name);
-        return s({data, count});
+        return this.s({data, count});
     }
 
     /**
@@ -39,7 +36,7 @@ export class FoodsController {
     @Get('findFood')
     async findFood(@Query('_id') _id: string) {
         const data = await this.foodsService.findFood(_id);
-        return s(data);
+        return this.s(data);
     }
 
     /**
@@ -49,7 +46,7 @@ export class FoodsController {
     async editFood(@Body() createfoodDto: CreateFoodDto) {
         createfoodDto.createTime = new Date();
         const data = await this.foodsService.editFood(createfoodDto);
-        return s(data);
+        return this.s(data);
     }
 
     /**
@@ -59,7 +56,7 @@ export class FoodsController {
     async putOnFood(@Body() createfoodDto: CreateFoodDto) {
         const data = await this.foodsService.putOnFood(createfoodDto._id);
         const msg: string = data.isPutonShelves ? '下架成功' : '上架成功';
-        return s(data, msg);
+        return this.s(data, msg);
     }
 
 }

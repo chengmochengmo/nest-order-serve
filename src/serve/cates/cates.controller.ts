@@ -1,20 +1,16 @@
-const fs = require('fs');
-const path = require('path');
-
-import { Controller, Get, Post, Body, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { Controller, Get, Post, Body, Query} from '@nestjs/common';
 import { CatesService } from './cates.service'
 import { CreateCateDto } from './dto/create-cate.dto';
 
-// 工具方法
-import { s } from '../../utils/function'
 // 配置常量
 import { constant } from '../../config/constant'
 import { ResponseStatus } from '../../utils/response';
+// 基础类
+import { BaseController } from '../../base/base.controller'
 
 @Controller('serve/cates')
-export class CatesController {
-    constructor(private readonly catesService: CatesService) {}
+export class CatesController extends BaseController {
+    constructor(private readonly catesService: CatesService) { super() }
 
     /**
      * 创建、修改分类
@@ -23,7 +19,7 @@ export class CatesController {
     async editCate(@Body() createcateDto: CreateCateDto) {
         createcateDto.createTime = new Date();
         const data = await this.catesService.editCate(createcateDto);
-        return s(data);
+        return this.s(data);
     }
 
     /**
@@ -34,7 +30,7 @@ export class CatesController {
         size = parseInt(size)
         page = parseInt(page)
         const [count, data] = await this.catesService.findCatesList(page, size, name);
-        return s({data, count});
+        return this.s({data, count});
     }
 
     /**
@@ -43,7 +39,7 @@ export class CatesController {
     @Get('findCate')
     async findCate(@Query('_id') _id: string) {
         const data = await this.catesService.findCate(_id);
-        return s(data);
+        return this.s(data);
     }
 
     /**
@@ -52,32 +48,7 @@ export class CatesController {
     @Post('delCate')
     async delCate(@Body() createcateDto: CreateCateDto) {
         const data = await this.catesService.delCate(createcateDto);
-        return s(data);
+        return this.s(data);
     }
 
-    /**
-     * 图片上传
-     */
-    @Post('upload')
-    @UseInterceptors(FileInterceptor('file'))
-    async upload(@UploadedFile() file, @Body('folder') folder) {
-        if(!folder) return s(null, '请标明文件储存路径', ResponseStatus.ERROR)
-        // 文件储存公共路径
-        const publicPath = path.join(__dirname, `../../../${constant.PUBLIC_PATH}/${folder}`);
-        // 检查路径是否存在 不存在则创建
-        try {
-            fs.accessSync(publicPath);
-        } catch (error) {
-            fs.mkdirSync(publicPath);
-        }
-        // 服务端储存的文件名字
-        const fileName: string = new Date().valueOf().toString() + file.originalname;
-        // 写入硬盘
-        fs.writeFileSync(path.join(publicPath, fileName), file.buffer);
-        return s({
-            filePath: `${constant.PUBLIC_PATH}/${folder}/${fileName}`,
-            size: file.size,
-            mimetype: file.mimetype
-        })
-    }
 }

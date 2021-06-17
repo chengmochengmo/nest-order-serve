@@ -1,6 +1,8 @@
 import { Module, Global, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+// 基础控制器类
+import { BaseModule } from './base/base.module';
 // 用户
 import { UsersModule } from './serve/users/users.module';
 // 分类
@@ -13,7 +15,7 @@ import { FoodsModule } from './serve/foods/foods.module';
 import { MongooseModule } from '@nestjs/mongoose';
 
 // redis数据库
-import { RedisModule} from 'nestjs-redis'
+import { RedisModule } from 'nestjs-redis'
 const options = {
   port: 6379,
   host: '127.0.0.1',
@@ -33,7 +35,8 @@ import { AuthMiddleware } from './common/middleware/auth.middleware'
     RedisModule.register(options),
     UsersModule,
     CatesModule,
-    FoodsModule
+    FoodsModule,
+    BaseModule
   ],
   controllers: [AppController],
   providers: [AppService, CacheService],
