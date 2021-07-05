@@ -20,26 +20,30 @@ export class TablesController extends BaseController {
      */
     @Post('editTable')
     async editTable(@Body() createtableDto: CreateTableDto) {
-        // 生成二维码
-        const qrCode = qr.image(createtableDto.tableNum.toString(), 'H', { type: 'png' });
-        // 储存的服务器路径
-        const publicPath = path.join(__dirname, '../../../');
-        // 文件名
-        const fileName = '/tableNum-' + createtableDto.tableNum + '.png';
-        // 访问路径
-        const accessPath = constant.PUBLIC_PATH + '/table' + fileName;
-        // 检查路径是否存在 不存在则创建
-        try {
-            fs.accessSync(publicPath);
-        } catch (error) {
-            fs.mkdirSync(publicPath);
+        // 新建逻辑
+        if(!createtableDto._id) {
+            // 生成二维码
+            const qrCode = qr.image(createtableDto.tableNum.toString(), 'H', { type: 'png' });
+            // 储存的服务器路径
+            const publicPath = path.join(__dirname, '../../../');
+            // 文件名
+            const fileName = '/tableNum-' + createtableDto.tableNum + '.png';
+            // 访问路径
+            const accessPath = constant.PUBLIC_PATH + '/table' + fileName;
+            // 检查路径是否存在 不存在则创建
+            try {
+                fs.accessSync(publicPath);
+            } catch (error) {
+                fs.mkdirSync(publicPath);
+            }
+            // 创建写入字节流 并写入硬盘
+            const writeStream = fs.createWriteStream(publicPath + accessPath);
+            qrCode.pipe(writeStream);
+            // 默认信息
+            createtableDto.status = 0;
+            createtableDto.qrCode = accessPath;
+            createtableDto.createTime = new Date();
         }
-        // 创建写入字节流 并写入硬盘
-        const writeStream = fs.createWriteStream(publicPath + accessPath);
-        qrCode.pipe(writeStream);
-        createtableDto.status = 0;
-        createtableDto.qrCode = accessPath;
-        createtableDto.createTime = new Date();
         const data = await this.tablesService.editTable(createtableDto);
         return this.s(data);
     }
@@ -73,4 +77,12 @@ export class TablesController extends BaseController {
         return this.s(data);
     }
 
+    /**
+     * 刷新桌位使用情况
+     */
+    @Get('reUseTable')
+    async reUseTable(@Query('_id') _id: string) {
+        const data = await this.tablesService.findTable(_id);
+        return this.s(data.status);
+    }
 }

@@ -53,4 +53,11 @@ export class TablesService {
         return this.tablesModel.findByIdAndRemove(createtableDto._id);
     }
 
+    /**
+     * 删除分类
+     */
+    async inputEatingRemarks(createtableDto: CreateTableDto): Promise<Tables> {
+        return this.tablesModel.findByIdAndUpdate(createtableDto._id, {$set: { eatingRemarks: createtableDto.eatingRemarks }});
+    }
+
 }
