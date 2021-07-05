@@ -60,7 +60,7 @@ export class BaseController {
     }
 
     // 生成token
-    regToken(data, query): Promise<String> {
+    regToken(data, query): Promise<string> {
         return new Promise(async (resolve, reject) => {
             // 毫秒时间戳 + mongo索引 生成明文token
             const plaintextToken: string = new Date().valueOf().toString() + query + data._id;
@@ -73,7 +73,7 @@ export class BaseController {
     }
 
     // 身份鉴权
-    auth(req): Promise<String> {
+    auth(req): Promise<string> {
         return new Promise(async (resolve, reject) => {
             const token: string = req.headers.token as string || '';
             const user = await this.cache.get(token);

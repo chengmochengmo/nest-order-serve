@@ -9,6 +9,8 @@ import { UsersModule } from './serve/users/users.module';
 import { CatesModule } from './serve/cates/cates.module';
 // 菜品
 import { FoodsModule } from './serve/foods/foods.module';
+// 桌位
+import { TablesModule } from './serve/tables/tables.module';
 
 
 // mongo数据库
@@ -36,7 +38,8 @@ import { AuthMiddleware } from './common/middleware/auth.middleware'
     UsersModule,
     CatesModule,
     FoodsModule,
-    BaseModule
+    BaseModule,
+    TablesModule
   ],
   controllers: [AppController],
   providers: [AppService, CacheService],

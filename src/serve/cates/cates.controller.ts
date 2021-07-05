@@ -2,9 +2,6 @@ import { Controller, Get, Post, Body, Query} from '@nestjs/common';
 import { CatesService } from './cates.service'
 import { CreateCateDto } from './dto/create-cate.dto';
 
-// 配置常量
-import { constant } from '../../config/constant'
-import { ResponseStatus } from '../../utils/response';
 // 基础类
 import { BaseController } from '../../base/base.controller'
 
