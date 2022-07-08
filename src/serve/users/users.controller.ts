@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { UsersService } from './users.service'
 import { CreateUserDto } from './dto/create-user.dto';
+import { CreateMenuDto } from './dto/create-menu.dto';
 import { CacheService } from '../../redis/cache.service'
 
 // 工具方法
@@ -53,10 +54,29 @@ export class UsersController extends BaseController {
     @Post('login')
     async login(@Body() createUserDto: CreateUserDto): Promise<object> {
         const data = await this.usersService.login(createUserDto);
-        if(!data) return this.s(null, '账号不存在', ResponseStatus.ERROR);
-        if(data.password !== createUserDto.password) return this.s(null, '密码不正确', ResponseStatus.ERROR);
+        if (!data) return this.s(null, '账号不存在', ResponseStatus.ERROR);
+        if (data.password !== createUserDto.password) return this.s(null, '密码不正确', ResponseStatus.ERROR);
         // 生成token
         const token = await this.regToken(data, 'serve');
         return this.s({...JSON.parse(JSON.stringify(data)), token}, '登录成功');
+    }
+
+    /**
+     * 菜单上传
+     */
+     @Post('uploadMenu')
+     async uploadMenu(@Body() createMenuDto: CreateMenuDto): Promise<object> {
+        const data = await this.usersService.uploadMenu(createMenuDto);
+        if (data) return this.s(null, '上传成功');
+        return this.s(null, '此菜单已经存在', ResponseStatus.ERROR);
+    }
+
+    /**
+     * 菜单获取
+     */
+     @Get('findMenuList')
+     async findMenuList(@Query('role') role): Promise<object> {
+        const data = await this.usersService.findMenuList(role);
+        return this.s(data.map(item => item.menu));
     }
 }
