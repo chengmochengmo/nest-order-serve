@@ -26,7 +26,7 @@ export class TablesService {
         const query: object = name ? { name: regexp } : {};
         return Promise.all([
             // 条件筛选后可查询总条数
-            this.tablesModel.count(query),
+            this.tablesModel.countDocuments(query),
             // 条件筛选后 当前分页数据
             this.tablesModel
                 .find(query)

@@ -25,7 +25,7 @@ export class FoodsService {
         const query: object = name ? { name: regexp } : {};
         return Promise.all([
             // 条件筛选后可查询总条数
-            this.foodsModel.count(query),
+            this.foodsModel.countDocuments(query),
             // 条件筛选后 当前分页数据
             this.foodsModel
                 .find(query)

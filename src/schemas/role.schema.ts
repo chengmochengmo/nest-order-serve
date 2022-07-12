@@ -12,7 +12,7 @@ export class Role extends Document {
 
   // 角色可访问菜单 只存菜单id
   @Prop({ required: true })
-  menuIds: Array<string>;
+  menuIds: string;
 
   // 创建日期
   @Prop()

@@ -25,6 +25,10 @@ export class AdminUsers extends Document {
   // 最后一次登录日期
   @Prop()
   lastLoginTime: Date;
+
+  // 角色id
+  @Prop()
+  roleId: string;
 }
 
 export const AdminUsersSchema = SchemaFactory.createForClass(AdminUsers);
