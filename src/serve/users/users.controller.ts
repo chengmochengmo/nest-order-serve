@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Req, Res } from '@nestjs/common';
 import { Request } from 'express';
 import { UsersService } from './users.service'
 import { CreateUserDto } from './dto/create-user.dto';
@@ -58,6 +58,7 @@ export class UsersController extends BaseController {
         const data = await this.usersService.login(createUserDto);
         if (!data) return this.s(null, '账号不存在', ResponseStatus.ERROR);
         if (data.password !== createUserDto.password) return this.s(null, '密码不正确', ResponseStatus.ERROR);
+        if (!data.roleId && data.userName !== 'admin') return this.s(null, '此帐号未设置权限', ResponseStatus.ERROR);
         // 生成token
         const token = await this.regToken(data, 'serve');
         return this.s({ ...JSON.parse(JSON.stringify(data)), token }, '登录成功');
@@ -76,6 +77,13 @@ export class UsersController extends BaseController {
      */
     @Get('findMenuList')
     async findMenuList(@Req() request: Request): Promise<object> {
+        if (request.query.role) {
+            // 获取角色可访问菜单
+            const data = await this.usersService.findMenuListByrole(request.query);
+            if (data) return this.s({data: data.map(item => item.menu)});
+            return this.s(data, '未找到此帐号绑定的角色', ResponseStatus.ERROR);
+        }
+        // 获取所有菜单
         const [count, data] = await this.usersService.findMenuList(request.query);
         return this.s({ count, data: data.map(item => item.menu) });
     }
@@ -95,7 +103,7 @@ export class UsersController extends BaseController {
      */
     @Get('findRoleList')
     async findRoleList(): Promise<object> {
-        const data = await this.usersService.findRoleList();
+        const data: any = await this.usersService.findRoleList();
         return this.s(data)
     }
     /**

@@ -77,15 +77,15 @@ export class UsersService {
 		});
 	}
 	/**
-	 * 菜单获取 角色id判断可访问菜单
+	 * 菜单获取 所有
 	 */
-	async findMenuList({ role, page = 1, size = 0, name, auth }: any): Promise<[number, Menu[]]> {
+	async findMenuList({ page = 1, size = 0, name, auth }: any): Promise<[number, Menu[]]> {
 		// 模糊匹配正则
 		const regexpName: RegExp = new RegExp(name);
 		const regexpAuth: RegExp = new RegExp(auth);
 		// 查询条件
 		const query: object = { 'menu.name': regexpName, 'menu.auth': regexpAuth };
-		if (!role) return Promise.all([
+		return Promise.all([
 			// 条件筛选后可查询总条数
 			this.menuModel.countDocuments(query),
 			// 条件筛选后 当前分页数据
@@ -96,6 +96,23 @@ export class UsersService {
 				.limit(size === 0 ? 999 : parseInt(size as string))
 				.exec()
 		]);
+	}
+	/**
+	 * 菜单获取 角色id判断可访问菜单
+	 */
+	 async findMenuListByrole({ role }: any): Promise<Menu[]> {
+		// 找到角色
+		const accessRole = await this.roleModel.findOne({_id: role});
+		if (accessRole) {
+			// 角色可访问菜单
+			const accessMenuIds = accessRole.menuIds;
+			const regexpRoleId: RegExp = new RegExp(accessMenuIds.map(item => `^${item}$`).join('|'));
+			return this.menuModel
+				.find({menuId: regexpRoleId})
+				.sort({ 'menuId': 1 })
+				.exec()
+		}
+		return null;
 	}
 	/**
 	 * 创建、编辑角色 
@@ -110,10 +127,15 @@ export class UsersService {
 	 * 获取角色列表 
 	 */
 	async findRoleList(): Promise<Role[]> {
-		const roleList = await this.roleModel.find().exec();
-		const roleListArray = roleList.map(item => item.menuIds.split(','));
-		console.log(roleList, roleListArray)
-		return this.roleModel.find().exec();
+		return this.roleModel
+			.find()
+			// 用menuId去Menu表查menuName
+			.populate({
+				path: 'menuNames',
+				select: 'menu.name -_id',
+				model: 'Menu'
+			})
+			.exec();
 	}
 	/**
 	 * 删除角色
