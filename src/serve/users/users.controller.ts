@@ -121,7 +121,8 @@ export class UsersController extends BaseController {
     @Post('userBindRole')
     async userBindRole(@Body('userId') userId: string, @Body('roleId') roleId: string): Promise<object> {
         const data: any = await this.usersService.userBindRole(userId, roleId);
-        if (data.nModified === 1) return this.s(null, '绑定成功');
+        console.log(data)
+        if (data.n === 1) return this.s(null, '绑定成功');
         return this.s(null, '角色不存在', ResponseStatus.ERROR);
     }
 

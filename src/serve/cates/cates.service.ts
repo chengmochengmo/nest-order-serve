@@ -31,7 +31,7 @@ export class CatesService {
             this.catesModel
                 .find(query)
                 // 转int类型排序
-                .collation({'locale': 'zh', numericOrdering: true})
+                // .collation({'locale': 'zh', numericOrdering: true})
                 .sort({'sort': -1})
                 .skip((page -1) * size)
                 .limit(size === 0 ? 999 : size)

@@ -28,6 +28,7 @@ export class BaseController {
         return new Promise ((resolve, reject) => {
             // 文件储存公共路径
             const publicPath = path.join(__dirname, `../../${constant.PUBLIC_PATH}/${folder}`);
+            console.log(publicPath)
             // 检查路径是否存在 不存在则创建
             try {
                 fs.accessSync(publicPath);
@@ -51,6 +52,7 @@ export class BaseController {
     @UseInterceptors(FileInterceptor('file'))
     async uploadImage(@UploadedFile() file, @Body('folder') folder, @Body('platform') platform) {
         if(!folder) return this.s(null, '请标明文件储存路径', ResponseStatus.ERROR);
+        if(!platform) return this.s(null, '请标明文件来源', ResponseStatus.ERROR);
         const data = await this.upload(file, folder);
         return this.s({
             filePath: `${constant.PUBLIC_PATH}/${folder}/${data.fileName}`,
